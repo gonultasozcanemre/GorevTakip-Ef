@@ -1,0 +1,56 @@
+@model GorevTakip.Models.Kategori
+@{
+    ViewData["Title"] = "Kategoriyi sil";
+    int gorevSayisi = ViewBag.GorevSayisi ?? 0;
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle"></i> Silme onayı
+            </div>
+            <div class="card-body">
+
+                <p>
+                    <span class="badge bg-@Model.Renk">@Model.KategoriAd</span>
+                    kategorisini silmek üzeresiniz.
+                </p>
+
+                @if (gorevSayisi > 0)
+                {
+                    @* Silinemiyorsa butonu HİÇ GÖSTERME.
+                       Basıp hata almak, butonun olmadığını görmekten kötüdür. *@
+                    <div class="alert alert-warning">
+                        <i class="bi bi-x-circle"></i>
+                        Bu kategoride <strong>@gorevSayisi görev</strong> var.
+                        Silmeden önce görevleri silmeli veya başka kategoriye taşımalısınız.
+                    </div>
+
+                    <a asp-controller="Gorev" asp-action="Index" asp-route-kategoriId="@Model.KategoriId"
+                       class="btn btn-primary">
+                        Bu kategorinin görevlerini gör
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                }
+                else
+                {
+                    <div class="alert alert-info small">
+                        Kayıt tamamen silinmez, pasif duruma alınır.
+                        "Pasifler" sayfasından geri getirilebilir.
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        @* name="id" ŞART — controller DeleteConfirmed(long id) bekliyor *@
+                        <input type="hidden" asp-for="KategoriId" name="id" />
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Evet, sil
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                    </form>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

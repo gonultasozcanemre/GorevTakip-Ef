@@ -1,0 +1,95 @@
+@model List<GorevTakip.Models.Kategori>
+@{
+    ViewData["Title"] = "Kategoriler";
+}
+
+@if (TempData["Basarili"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle"></i> @TempData["Basarili"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Uyari"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle"></i> @TempData["Uyari"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">Kategoriler (@Model.Count)</span>
+        <div>
+            <a asp-action="Pasifler" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-archive"></i> Pasifler
+            </a>
+            <a asp-action="Create" class="btn btn-success btn-sm">
+                <i class="bi bi-plus-lg"></i> Yeni kategori
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        @if (Model.Count == 0)
+        {
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-tags fs-1 d-block mb-2"></i>
+                <p class="mb-3">Henüz kategori yok.</p>
+                <a asp-action="Create" class="btn btn-sm btn-success">İlk kategoriyi ekle</a>
+            </div>
+        }
+        else
+        {
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Kategori</th>
+                        <th>Açıklama</th>
+                        <th class="text-center">Görev</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var k in Model)
+                    {
+                        <tr>
+                            <td>
+                                @* Renk alanı doğrudan Bootstrap sınıf adı olarak kullanılıyor *@
+                                <span class="badge bg-@k.Renk">@k.KategoriAd</span>
+                            </td>
+
+                            <td class="small text-muted">
+                                @* ⭐ NULL kontrolü — açıklama boş olabilir *@
+                                @if (string.IsNullOrWhiteSpace(k.Aciklama))
+                                {
+                                    <span class="fst-italic">—</span>
+                                }
+                                else
+                                {
+                                    @k.Aciklama
+                                }
+                            </td>
+
+                            <td class="text-center">
+                                @* Include ile geldi *@
+                                <span class="badge bg-light text-dark">@k.Gorevler.Count</span>
+                            </td>
+
+                            <td class="text-end text-nowrap">
+                                <a asp-action="Edit" asp-route-id="@k.KategoriId" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@k.KategoriId" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

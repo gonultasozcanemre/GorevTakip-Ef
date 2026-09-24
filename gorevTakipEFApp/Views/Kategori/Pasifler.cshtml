@@ -1,0 +1,56 @@
+@model List<GorevTakip.Models.Kategori>
+@{
+    ViewData["Title"] = "Pasif kategoriler";
+}
+
+@if (TempData["Basarili"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle"></i> @TempData["Basarili"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">Silinmiş kategoriler (@Model.Count)</span>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Aktif listeye dön
+        </a>
+    </div>
+
+    <div class="card-body p-0">
+        @if (Model.Count == 0)
+        {
+            <p class="text-muted text-center py-5 mb-0">Pasif kayıt yok.</p>
+        }
+        else
+        {
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Kategori</th>
+                        <th>Silinme tarihi</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var k in Model)
+                    {
+                        <tr class="text-muted">
+                            <td>@k.KategoriAd</td>
+                            <td>@(k.UpdatedDate?.ToString("dd.MM.yyyy HH:mm") ?? "—")</td>
+                            <td class="text-end">
+                                <form asp-action="GeriAl" asp-route-id="@k.KategoriId" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Geri getir
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

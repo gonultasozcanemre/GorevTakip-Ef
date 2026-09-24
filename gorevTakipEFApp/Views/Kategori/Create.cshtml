@@ -1,0 +1,56 @@
+@model GorevTakip.Models.Kategori
+@{
+    ViewData["Title"] = "Yeni kategori";
+}
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="KategoriAd" class="form-label"></label>
+                        <input asp-for="KategoriAd" class="form-control" autofocus />
+                        <span asp-validation-for="KategoriAd" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Renk" class="form-label"></label>
+                        <select asp-for="Renk" class="form-select">
+                            <option value="primary">Mavi</option>
+                            <option value="success">Yeşil</option>
+                            <option value="danger">Kırmızı</option>
+                            <option value="warning">Sarı</option>
+                            <option value="info">Turkuaz</option>
+                            <option value="secondary">Gri</option>
+                        </select>
+                        <span asp-validation-for="Renk" class="text-danger small"></span>
+                        <div class="form-text">Kategorinin listedeki rozet rengi.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label"></label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger small"></span>
+                        @* ⭐ Zorunlu olmadığını kullanıcıya SÖYLE *@
+                        <div class="form-text">İsteğe bağlı.</div>
+                    </div>
+
+                    <hr />
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg"></i> Kategoriyi kaydet
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
