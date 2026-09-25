@@ -1,0 +1,72 @@
+@model GorevTakip.Models.Gorev
+@{
+    ViewData["Title"] = "Görevi sil";
+}
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card border-danger shadow-sm">
+
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle"></i> Silme onayı
+            </div>
+
+            <div class="card-body">
+
+                <p>Bu görevi silmek üzeresiniz:</p>
+
+                <dl class="row mb-4">
+                    <dt class="col-sm-4">Başlık</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.Baslik</dd>
+
+                    <dt class="col-sm-4">Kategori</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-@(Model.Kategori?.Renk ?? "secondary")">
+                            @Model.Kategori?.KategoriAd
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-4">Öncelik</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-@Model.OncelikRenk">@Model.OncelikAdi</span>
+                    </dd>
+
+                    <dt class="col-sm-4">Durum</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-@Model.DurumRenk">@Model.DurumAdi</span>
+                    </dd>
+
+                    <dt class="col-sm-4">Bitiş tarihi</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.BitisTarihi.HasValue)
+                        {
+                            @Model.BitisTarihi.Value.ToString("dd.MM.yyyy")
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Belirtilmemiş</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">Oluşturulma</dt>
+                    <dd class="col-sm-8">@Model.CreatedDate.ToString("dd.MM.yyyy")</dd>
+                </dl>
+
+                <div class="alert alert-info small">
+                    <i class="bi bi-info-circle"></i>
+                    Kayıt veritabanından tamamen silinmez, pasif duruma alınır.
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    @* name="id" ŞART — controller DeleteConfirmed(long id) bekliyor *@
+                    <input type="hidden" asp-for="GorevId" name="id" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Evet, sil
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

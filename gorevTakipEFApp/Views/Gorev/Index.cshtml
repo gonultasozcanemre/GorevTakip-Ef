@@ -14,120 +14,167 @@
 
 <div class="card border-0 shadow-sm">
 
-    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-        <span class="fw-semibold">Görevler (@Model.Count)</span>
-        <a asp-action="Create" class="btn btn-success btn-sm">
-            <i class="bi bi-plus-lg"></i> Yeni görev
-        </a>
-    </div>
 
-    <div class="card-body p-0">
 
-        @if (Model.Count == 0)
-        {
-            <div class="text-center text-muted py-5">
-                <i class="bi bi-clipboard-check fs-1 d-block mb-2"></i>
-                <p class="mb-3">Henüz görev yok.</p>
-                <a asp-action="Create" class="btn btn-sm btn-success">İlk görevi ekle</a>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Görevler (@Model.Count)</span>
+            <div>
+                <a asp-action="Pasifler" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-archive"></i> Pasifler
+                </a>
+                <a asp-action="Create" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-lg"></i> Yeni görev
+                </a>
             </div>
-        }
-        else
-        {
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Görev</th>
-                        <th>Kategori</th>
-                        <th class="text-center">Öncelik</th>
-                        <th class="text-center">Durum</th>
-                        <th>Bitiş</th>
-                        <th class="text-end">İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var g in Model)
-                    {
-                        @* ⭐ Hesaplanan özellikler BURADA kullanılabilir.
-                             Veriler zaten bellekte — EF devrede değil. *@
-                        <tr class="@(g.GecikmisMi ? "table-danger" : "")">
+        </div>
 
-                            <td>
-                                @* Tamamlanan görevin başlığı üstü çizili ve soluk *@
-                                <a asp-action="Details" asp-route-id="@g.GorevId" class="text-decoration-none fw-semibold
-                                    @(g.TamamlandiMi ? "text-muted text-decoration-line-through" : "")">
-                                    @g.Baslik
-                                </a>
+        <div class="card-body p-0">
 
-                                @if (!string.IsNullOrWhiteSpace(g.Aciklama))
-                                {
-                                    <div class="text-muted small text-truncate" style="max-width: 320px;">
-                                        @g.Aciklama
-                                    </div>
-                                }
-                            </td>
-
-                            <td>
-                                @* Include ile geldi. ?. kullanıyoruz:
-                                   Include unutulursa çökmesin, boş görünsün. *@
-                                <span class="badge bg-@(g.Kategori?.Renk ?? "secondary")">
-                                    @g.Kategori?.KategoriAd
-                                </span>
-                            </td>
-
-                            <td class="text-center">
-                                <span class="badge bg-@g.OncelikRenk">@g.OncelikAdi</span>
-                            </td>
-
-                            <td class="text-center">
-                                <span class="badge bg-@g.DurumRenk">@g.DurumAdi</span>
-                            </td>
-
-                            <td class="small">
-                                @* ⭐ Dört farklı durum *@
-                                @if (!g.BitisTarihi.HasValue)
-                                {
-                                    <span class="text-muted fst-italic">—</span>
-                                }
-                                else if (g.GecikmisMi)
-                                {
-                                    <span class="text-danger fw-semibold">
-                                        <i class="bi bi-exclamation-circle"></i>
-                                        @g.BitisTarihi.Value.ToString("dd.MM.yyyy")
-                                        (@(-g.KalanGun) gün gecikti)
-                                    </span>
-                                }
-                                else if (g.BugunMu)
-                                {
-                                    <span class="text-warning fw-semibold">
-                                        <i class="bi bi-calendar-event"></i>
-                                        Bugün!
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span>@g.BitisTarihi.Value.ToString("dd.MM.yyyy")</span>
-
-                                    @if (!g.TamamlandiMi && g.KalanGun <= 3)
-                                    {
-                                        <span class="text-warning">(@g.KalanGun gün kaldı)</span>
-                                    }
-                                }
-                            </td>
-
-                            <td class="text-end text-nowrap">
-                                @* Hızlı eylem butonları Modül 5'te buraya eklenecek *@
-                                <a asp-action="Edit" asp-route-id="@g.GorevId" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@g.GorevId" class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </td>
+            @if (Model.Count == 0)
+            {
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-clipboard-check fs-1 d-block mb-2"></i>
+                    <p class="mb-3">Henüz görev yok.</p>
+                    <a asp-action="Create" class="btn btn-sm btn-success">İlk görevi ekle</a>
+                </div>
+            }
+            else
+            {
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Görev</th>
+                            <th>Kategori</th>
+                            <th class="text-center">Öncelik</th>
+                            <th class="text-center">Durum</th>
+                            <th>Bitiş</th>
+                            <th class="text-end">İşlemler</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        }
+                    </thead>
+                    <tbody>
+                        @foreach (var g in Model)
+                        {
+                            @* ⭐ Hesaplanan özellikler BURADA kullanılabilir.
+                             Veriler zaten bellekte — EF devrede değil. *@
+                            <tr class="@(g.GecikmisMi ? "table-danger" : "")">
 
+                                <td>
+                                    @* Tamamlanan görevin başlığı üstü çizili ve soluk *@
+                                    <a asp-action="Details" asp-route-id="@g.GorevId" class="text-decoration-none fw-semibold
+                                        @(g.TamamlandiMi ? "text-muted text-decoration-line-through" : "")">
+                                        @g.Baslik
+                                    </a>
+                               
+
+                                    @if (!string.IsNullOrWhiteSpace(g.Aciklama))
+                                    {
+                                        <div class="text-muted small text-truncate" style="max-width: 320px;">
+                                            @g.Aciklama
+                                        </div>
+                                    }
+                                </td>
+
+                                <td>
+                                    @* Include ile geldi. ?. kullanıyoruz:
+                                   Include unutulursa çökmesin, boş görünsün. *@
+                                    <span class="badge bg-@(g.Kategori?.Renk ?? "secondary")">
+                                        @g.Kategori?.KategoriAd
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <span class="badge bg-@g.OncelikRenk">@g.OncelikAdi</span>
+                                </td>
+
+                                <td class="text-center">
+                                    <span class="badge bg-@g.DurumRenk">@g.DurumAdi</span>
+                                </td>
+
+                                <td class="small">
+                                    @* ⭐ Dört farklı durum *@
+                                    @if (!g.BitisTarihi.HasValue)
+                                    {
+                                        <span class="text-muted fst-italic">—</span>
+                                    }
+                                    else if (g.GecikmisMi)
+                                    {
+                                        <span class="text-danger fw-semibold">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            @g.BitisTarihi.Value.ToString("dd.MM.yyyy")
+                                            (@(-g.KalanGun) gün gecikti)
+                                        </span>
+                                    }
+                                    else if (g.BugunMu)
+                                    {
+                                        <span class="text-warning fw-semibold">
+                                            <i class="bi bi-calendar-event"></i>
+                                            Bugün!
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>@g.BitisTarihi.Value.ToString("dd.MM.yyyy")</span>
+
+                                        @if (!g.TamamlandiMi && g.KalanGun <= 3)
+                                        {
+                                            <span class="text-warning">(@g.KalanGun gün kaldı)</span>
+                                        }
+                                    }
+                                </td>
+
+                                <td class="text-end text-nowrap">
+
+                                    @* ⭐ Hızlı eylem — küçük bir form.
+       asp-action kullandığımız için antiforgery token otomatik ekleniyor. *@
+                                    <form asp-action="@(g.TamamlandiMi ? "GeriAl" : "Tamamla")" asp-route-id="@g.GorevId"
+                                          method="post" class="d-inline">
+
+                                        @* Kullanıcı hangi sayfadaydı? Filtreli listeye geri dönebilsin *@
+                                        <input type="hidden" name="donusUrl"
+                                               value="@Context.Request.Path@Context.Request.QueryString" />
+
+                                        @if (g.TamamlandiMi)
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary" title="Geri al">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-outline-success"
+                                                    title="Tamamlandı olarak işaretle">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                        }
+                                    </form>
+
+                                    @* "Başlat" sadece bekleyen görevlerde anlamlı *@
+                                    @if (g.Durum == GorevTakip.Models.GorevDurum.Beklemede)
+                                    {
+                                        <form asp-action="Baslat" asp-route-id="@g.GorevId" method="post" class="d-inline">
+                                            <input type="hidden" name="donusUrl"
+                                                   value="@Context.Request.Path@Context.Request.QueryString" />
+                                            <button type="submit" class="btn btn-sm btn-outline-info" title="Başlat">
+                                                <i class="bi bi-play-fill"></i>
+                                            </button>
+                                        </form>
+                                    }
+
+                                    <a asp-action="Edit" asp-route-id="@g.GorevId" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    <a asp-action="Delete" asp-route-id="@g.GorevId" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+        </div>
     </div>
-</div>

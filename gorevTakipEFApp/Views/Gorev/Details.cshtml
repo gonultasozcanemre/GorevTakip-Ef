@@ -1,0 +1,111 @@
+@model GorevTakip.Models.Gorev
+@{
+    ViewData["Title"] = "Görev detayı";
+}
+
+<div class="row">
+    <div class="col-lg-8">
+
+        <div class="card border-0 shadow-sm">
+
+            @* ───────── ÜST BAŞLIK ───────── *@
+            <div class="card-body border-bottom">
+
+                <h5 class="mb-2 @(Model.TamamlandiMi ? "text-muted text-decoration-line-through" : "")">
+                    @Model.Baslik
+                </h5>
+
+                <span class="badge bg-@(Model.Kategori?.Renk ?? "secondary")">
+                    @Model.Kategori?.KategoriAd
+                </span>
+                <span class="badge bg-@Model.OncelikRenk">@Model.OncelikAdi öncelik</span>
+                <span class="badge bg-@Model.DurumRenk">@Model.DurumAdi</span>
+
+                @* ⭐ Hesaplanan özelliklerin işe yaradığı yer *@
+                @if (Model.GecikmisMi)
+                {
+                    <div class="alert alert-danger mt-3 mb-0 py-2 small">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        Bu görev <strong>@(-Model.KalanGun) gün</strong> gecikti.
+                    </div>
+                }
+                else if (Model.BugunMu)
+                {
+                    <div class="alert alert-warning mt-3 mb-0 py-2 small">
+                        <i class="bi bi-calendar-event"></i>
+                        Bu görevin son günü <strong>bugün</strong>.
+                    </div>
+                }
+                else if (!Model.TamamlandiMi && Model.KalanGun.HasValue && Model.KalanGun <= 3)
+                {
+                    <div class="alert alert-warning mt-3 mb-0 py-2 small">
+                        <i class="bi bi-clock"></i>
+                        Bitiş tarihine <strong>@Model.KalanGun gün</strong> kaldı.
+                    </div>
+                }
+            </div>
+
+            @* ───────── AÇIKLAMA ───────── *@
+            <div class="card-body border-bottom">
+                <h6 class="text-muted mb-2">Açıklama</h6>
+
+                @if (string.IsNullOrWhiteSpace(Model.Aciklama))
+                {
+                    <p class="text-muted fst-italic mb-0">Açıklama girilmemiş.</p>
+                }
+                else
+                {
+                    @* white-space: pre-wrap → satır sonlarını koru *@
+                    <p class="mb-0" style="white-space: pre-wrap;">@Model.Aciklama</p>
+                }
+            </div>
+
+            @* ───────── TARİHLER ───────── *@
+            <div class="card-body">
+                <h6 class="text-muted mb-3">Tarihler</h6>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 fw-normal text-muted">Bitiş tarihi</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.BitisTarihi.HasValue)
+                        {
+                            <span class="@(Model.GecikmisMi ? "text-danger fw-semibold" : "")">
+                                @Model.BitisTarihi.Value.ToString("dd MMMM yyyy")
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Belirtilmemiş</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4 fw-normal text-muted">Oluşturulma</dt>
+                    <dd class="col-sm-8">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4 fw-normal text-muted">Son güncelleme</dt>
+                    <dd class="col-sm-8">
+                        @(Model.UpdatedDate?.ToString("dd.MM.yyyy HH:mm") ?? "Henüz güncellenmemiş")
+                    </dd>
+
+                    <dt class="col-sm-4 fw-normal text-muted">Tamamlanma</dt>
+                    <dd class="col-sm-8">
+                        @(Model.TamamlanmaTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "—")
+                    </dd>
+                </dl>
+            </div>
+
+            <div class="card-footer bg-white">
+                <a asp-action="Edit" asp-route-id="@Model.GorevId" class="btn btn-primary btn-sm">
+                    <i class="bi bi-pencil"></i> Düzenle
+                </a>
+                <a asp-action="Delete" asp-route-id="@Model.GorevId" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash"></i> Sil
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Listeye dön
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

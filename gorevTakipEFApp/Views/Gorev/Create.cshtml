@@ -1,0 +1,90 @@
+@model GorevTakip.Models.Gorev
+@using GorevTakip.Models
+@{
+    ViewData["Title"] = "Yeni görev";
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Baslik" class="form-label"></label>
+                        <input asp-for="Baslik" class="form-control" autofocus placeholder="Ne yapılacak?" />
+                        <span asp-validation-for="Baslik" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label"></label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger small"></span>
+                        <div class="form-text">İsteğe bağlı.</div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="KategoriId" class="form-label"></label>
+                            <select asp-for="KategoriId" asp-items="ViewBag.Kategoriler" class="form-select">
+                                @* Boş seçenek olmazsa ilk kategori otomatik seçili görünür
+                                   ve kullanıcı farkında olmadan yanlış kategori kaydeder *@
+                                <option value="">-- Kategori seçin --</option>
+                            </select>
+                            <span asp-validation-for="KategoriId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Oncelik" class="form-label"></label>
+                            @* ⭐ ENUM AÇILIR LİSTESİ
+                               value olarak enum ÜYE ADINI yazıyoruz.
+                               ASP.NET Core bunu otomatik olarak enum'a çevirir.
+                               ("3" yazmak da çalışır ama ad daha okunabilir.) *@
+                            <select asp-for="Oncelik" class="form-select">
+                                <option value="Dusuk">Düşük</option>
+                                <option value="Orta" selected>Orta</option>
+                                <option value="Yuksek">Yüksek</option>
+                            </select>
+                            <span asp-validation-for="Oncelik" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Durum" class="form-label"></label>
+                            <select asp-for="Durum" class="form-select">
+                                <option value="Beklemede">Beklemede</option>
+                                <option value="DevamEdiyor">Devam ediyor</option>
+                                <option value="Tamamlandi">Tamamlandı</option>
+                            </select>
+                            <span asp-validation-for="Durum" class="text-danger small"></span>
+                        </div>
+
+                    </div>
+
+                    @* ⭐ BOŞ BIRAKILABİLEN TARİH *@
+                    <div class="mb-3">
+                        <label asp-for="BitisTarihi" class="form-label"></label>
+                        <input asp-for="BitisTarihi" type="date" class="form-control" style="max-width: 220px;" />
+                        <span asp-validation-for="BitisTarihi" class="text-danger small"></span>
+                        <div class="form-text">
+                            İsteğe bağlı. Boş bırakırsanız görevin son tarihi olmaz.
+                        </div>
+                    </div>
+
+                    <hr />
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg"></i> Görevi kaydet
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

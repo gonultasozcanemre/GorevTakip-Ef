@@ -140,6 +140,7 @@ public class GorevDbContext : DbContext
                 CreatedDate = sabitTarih,
                 AktifMi = true
             }
+            
         );
     }
 }

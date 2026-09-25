@@ -31,8 +31,28 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Pasifler.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcUGFzaWZsZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Hesap/Giris.cshtml]

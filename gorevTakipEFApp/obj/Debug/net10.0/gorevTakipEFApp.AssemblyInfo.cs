@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("gorevTakipEFApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d16505dcc2c7eb406ec0cfda86d787336a946619")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1ba66ccc8f089d73287ccc5e7844d3d79fc0764c")]
 [assembly: System.Reflection.AssemblyProductAttribute("gorevTakipEFApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("gorevTakipEFApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

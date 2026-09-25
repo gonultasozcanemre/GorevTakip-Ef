@@ -219,4 +219,155 @@ public class GorevController : Controller
 
         return View(gorev);
     }
+    // ══════════════════════════════════════════════════════
+    //  8) PASİF KAYITLAR
+    // ══════════════════════════════════════════════════════
+    public async Task<IActionResult> Pasifler()
+    {
+        var pasifler = await _db.Gorevler
+            .AsNoTracking()
+            .IgnoreQueryFilters()
+            .Include(g => g.Kategori)                // ⭐ soft delete filtresini atla
+            .Where(g => !g.AktifMi)
+            .OrderBy(g => g.Baslik)
+            .ToListAsync();
+
+        return View(pasifler);
+    }
+    // ══════════════════════════════════════════════════════
+    //  10) GÖREVİ GERİ YÜKLE
+    //  POST: /Gorev/GeriYukle/5
+    //
+    //  ⚠️ Adı "GeriAl" DEĞİL — Modül 5'te durum geri alma için
+    //     o adı kullanacağız. Sebebi yukarıda açıklandı.
+    // ══════════════════════════════════════════════════════
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GeriYukle(long id)
+    {
+        // ⚠️⚠️ IgnoreQueryFilters ŞART!
+        //    FindAsync(id) yazsaydık query filter devreye girer,
+        //    pasif kaydı BULAMAZDI ve hep NotFound() dönerdi.
+        var gorev = await _db.Gorevler
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(g => g.GorevId == id);
+
+        if (gorev == null)
+            return NotFound();
+
+        // ⭐ Zaten aktifse boşuna işlem yapma
+        if (gorev.AktifMi)
+        {
+            TempData["Uyari"] = "Bu görev zaten aktif.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // ⭐ Kategorisi silinmişse geri yükleme anlamsız olur —
+        //    görev listede görünmez çünkü Include, kategorinin
+        //    query filter'ını da uygular ve satır elenir.
+        bool kategoriAktif = await _db.Kategoriler
+            .AnyAsync(k => k.KategoriId == gorev.KategoriId);
+
+        if (!kategoriAktif)
+        {
+            TempData["Uyari"] = "Bu görevin kategorisi silinmiş. " +
+                                "Önce kategoriyi geri getirmelisiniz.";
+            return RedirectToAction(nameof(Pasifler));
+        }
+
+        gorev.AktifMi = true;
+        gorev.UpdatedDate = DateTime.Now;
+        await _db.SaveChangesAsync();
+
+        TempData["Basarili"] = "Görev geri getirildi.";
+        return RedirectToAction(nameof(Pasifler));
+    }
+    // ══════════════════════════════════════════════════════
+    //  HIZLI EYLEM: TAMAMLA
+    //  POST: /Gorev/Tamamla/5
+    // ══════════════════════════════════════════════════════
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Tamamla(long id, string? donusUrl = null)
+    {
+        // ⭐ TEK SORGU — nesneyi çekmiyoruz bile.
+        //    Dönüş değeri: kaç satır etkilendi?
+        int etkilenen = await _db.Gorevler
+            .Where(g => g.GorevId == id)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(g => g.Durum, GorevDurum.Tamamlandi)
+                .SetProperty(g => g.TamamlanmaTarihi, DateTime.Now)
+                .SetProperty(g => g.UpdatedDate, DateTime.Now));
+
+        if (etkilenen == 0)
+            return NotFound();
+
+        TempData["Basarili"] = "Görev tamamlandı.";
+        return GeriDon(donusUrl);
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  HIZLI EYLEM: GERİ AL
+    //  POST: /Gorev/GeriAl/5
+    // ══════════════════════════════════════════════════════
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GeriAl(long id, string? donusUrl = null)
+    {
+        int etkilenen = await _db.Gorevler
+            .Where(g => g.GorevId == id)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(g => g.Durum, GorevDurum.Beklemede)
+                // ⭐ DİKKAT: null atarken tip belirtmek gerekir.
+                //    Sadece "null" yazsaydık derleyici hangi tip
+                //    olduğunu anlayamazdı.
+                .SetProperty(g => g.TamamlanmaTarihi, (DateTime?)null)
+                .SetProperty(g => g.UpdatedDate, DateTime.Now));
+
+        if (etkilenen == 0)
+            return NotFound();
+
+        TempData["Basarili"] = "Görev yeniden açıldı.";
+        return GeriDon(donusUrl);
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  HIZLI EYLEM: BAŞLAT (devam ediyor yap)
+    //  POST: /Gorev/Baslat/5
+    // ══════════════════════════════════════════════════════
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Baslat(long id, string? donusUrl = null)
+    {
+        int etkilenen = await _db.Gorevler
+            .Where(g => g.GorevId == id)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(g => g.Durum, GorevDurum.DevamEdiyor)
+                .SetProperty(g => g.TamamlanmaTarihi, (DateTime?)null)
+                .SetProperty(g => g.UpdatedDate, DateTime.Now));
+
+        if (etkilenen == 0)
+            return NotFound();
+
+        TempData["Basarili"] = "Görev başlatıldı.";
+        return GeriDon(donusUrl);
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  YARDIMCI: filtreli listeye geri dön
+    //
+    //  ⚠️ Url.IsLocalUrl kontrolü ŞART!
+    //     Kullanıcıdan gelen bir adrese yönlendirirken HER ZAMAN
+    //     bu kontrol yapılır — yoksa açık yönlendirme açığı olur.
+    //     (Modül 2'de giriş sonrası yönlendirmede de görmüştük.)
+    // ══════════════════════════════════════════════════════
+    private IActionResult GeriDon(string? donusUrl)
+    {
+        if (!string.IsNullOrEmpty(donusUrl) && Url.IsLocalUrl(donusUrl))
+            return Redirect(donusUrl);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
 }

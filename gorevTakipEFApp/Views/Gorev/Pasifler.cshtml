@@ -1,0 +1,120 @@
+@model List<GorevTakip.Models.Gorev>
+@{
+    ViewData["Title"] = "Silinmiş görevler";
+}
+
+@if (TempData["Basarili"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle"></i> @TempData["Basarili"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Uyari"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle"></i> @TempData["Uyari"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm">
+
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">Silinmiş görevler (@Model.Count)</span>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Aktif listeye dön
+        </a>
+    </div>
+
+    <div class="card-body p-0">
+
+        @if (Model.Count == 0)
+        {
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-archive fs-1 d-block mb-2"></i>
+                <p class="mb-0">Silinmiş görev yok.</p>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info small m-3 mb-0">
+                <i class="bi bi-info-circle"></i>
+                Bu kayıtlar veritabanında duruyor, sadece listelerde gizleniyor.
+                "Geri getir" ile aktif listeye döndürebilirsiniz.
+            </div>
+
+            <table class="table table-hover align-middle mb-0 mt-3">
+                <thead class="table-light">
+                    <tr>
+                        <th>Görev</th>
+                        <th>Kategori</th>
+                        <th class="text-center">Öncelik</th>
+                        <th class="text-center">Durum</th>
+                        <th>Silinme tarihi</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var g in Model)
+                    {
+                        @* Pasif kayıtlar soluk görünsün *@
+                        <tr class="text-muted">
+
+                            <td>
+                                <span class="fw-semibold">@g.Baslik</span>
+
+                                @if (!string.IsNullOrWhiteSpace(g.Aciklama))
+                                {
+                                    <div class="small text-truncate" style="max-width: 300px;">
+                                        @g.Aciklama
+                                    </div>
+                                }
+                            </td>
+
+                            <td>
+                                @* ⚠️ IgnoreQueryFilters bu sorguda KATEGORİYE DE uygulandı.
+                                     Yani silinmiş bir kategorinin adı bile görünür.
+                                     Bu bizim için iyi — kullanıcı neyi geri getirdiğini bilsin. *@
+                                <span class="badge bg-@(g.Kategori?.Renk ?? "secondary")">
+                                    @g.Kategori?.KategoriAd
+                                </span>
+
+                                @if (g.Kategori != null && !g.Kategori.AktifMi)
+                                {
+                                    <div class="text-danger" style="font-size: .7rem;">
+                                        <i class="bi bi-exclamation-circle"></i> kategori silinmiş
+                                    </div>
+                                }
+                            </td>
+
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark border">@g.OncelikAdi</span>
+                            </td>
+
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark border">@g.DurumAdi</span>
+                            </td>
+
+                            <td class="small">
+                                @(g.UpdatedDate?.ToString("dd.MM.yyyy HH:mm") ?? "—")
+                            </td>
+
+                            <td class="text-end">
+                                <form asp-action="GeriYukle" asp-route-id="@g.GorevId" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Geri getir
+                                    </button>
+                                </form>
+                            </td>
+                            
+                            
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+    </div>
+</div>
