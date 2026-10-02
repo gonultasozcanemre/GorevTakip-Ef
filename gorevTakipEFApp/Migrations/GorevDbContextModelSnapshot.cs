@@ -55,6 +55,9 @@ namespace gorevTakipEFApp.Migrations
                     b.Property<long>("KategoriId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("KullaniciId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("Oncelik")
                         .HasColumnType("int");
 
@@ -71,6 +74,8 @@ namespace gorevTakipEFApp.Migrations
                     b.HasIndex("Durum");
 
                     b.HasIndex("KategoriId");
+
+                    b.HasIndex("KullaniciId");
 
                     b.ToTable("Gorevler");
                 });
@@ -98,6 +103,9 @@ namespace gorevTakipEFApp.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<long>("KullaniciId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Renk")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -108,7 +116,7 @@ namespace gorevTakipEFApp.Migrations
 
                     b.HasKey("KategoriId");
 
-                    b.HasIndex("KategoriAd")
+                    b.HasIndex("KullaniciId", "KategoriAd")
                         .IsUnique();
 
                     b.ToTable("Kategoriler");
@@ -121,6 +129,7 @@ namespace gorevTakipEFApp.Migrations
                             AktifMi = true,
                             CreatedDate = new DateTime(2026, 1, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
                             KategoriAd = "İş",
+                            KullaniciId = 1L,
                             Renk = "primary"
                         },
                         new
@@ -130,6 +139,7 @@ namespace gorevTakipEFApp.Migrations
                             AktifMi = true,
                             CreatedDate = new DateTime(2026, 1, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
                             KategoriAd = "Okul",
+                            KullaniciId = 1L,
                             Renk = "success"
                         },
                         new
@@ -138,6 +148,7 @@ namespace gorevTakipEFApp.Migrations
                             AktifMi = true,
                             CreatedDate = new DateTime(2026, 1, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
                             KategoriAd = "Ev",
+                            KullaniciId = 1L,
                             Renk = "warning"
                         },
                         new
@@ -147,6 +158,7 @@ namespace gorevTakipEFApp.Migrations
                             AktifMi = true,
                             CreatedDate = new DateTime(2026, 1, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
                             KategoriAd = "Kişisel",
+                            KullaniciId = 1L,
                             Renk = "info"
                         });
                 });
@@ -207,12 +219,38 @@ namespace gorevTakipEFApp.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("GorevTakip.Models.Kullanici", "Kullanici")
+                        .WithMany("Gorevler")
+                        .HasForeignKey("KullaniciId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Kategori");
+
+                    b.Navigation("Kullanici");
+                });
+
+            modelBuilder.Entity("GorevTakip.Models.Kategori", b =>
+                {
+                    b.HasOne("GorevTakip.Models.Kullanici", "Kullanici")
+                        .WithMany("Kategoriler")
+                        .HasForeignKey("KullaniciId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Kullanici");
                 });
 
             modelBuilder.Entity("GorevTakip.Models.Kategori", b =>
                 {
                     b.Navigation("Gorevler");
+                });
+
+            modelBuilder.Entity("GorevTakip.Models.Kullanici", b =>
+                {
+                    b.Navigation("Gorevler");
+
+                    b.Navigation("Kategoriler");
                 });
 #pragma warning restore 612, 618
         }

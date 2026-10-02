@@ -33,24 +33,83 @@ public class GorevController : Controller
     }
 
     // ══════════════════════════════════════════════════════
-    //  1) LİSTELEME
-    //  GET: /Gorev
-    //
-    //  (Filtreleme Modül 5'te eklenecek)
+    //  LİSTELEME + ARAMA + FİLTRE
+    //  GET: /Gorev?arama=rapor&kategoriId=2&durum=Beklemede&sadeceGecikmis=true
     // ══════════════════════════════════════════════════════
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+        string? arama,
+        long? kategoriId,
+        GorevDurum? durum,
+        Oncelik? oncelik,
+        bool sadeceGecikmis = false)
     {
-        var gorevler = await _db.Gorevler
+        // ⭐ Bir kez al, her yerde kullan.
+        //    Hem parametre olarak gider hem de gece yarısı tutarsızlığını önler.
+        var bugun = DateTime.Today;
+
+        // ══════════════════════════════════════════════════
+        //  SORGUYU PARÇA PARÇA KUR
+        //
+        //  ⭐ Bu satırların HİÇBİRİ veritabanına gitmez.
+        //     Sadece "ne isteyeceğimizin tarifi" hazırlanır.
+        //     Son satırdaki ToListAsync() TEK sorgu çalıştırır.
+        // ══════════════════════════════════════════════════
+        IQueryable<Gorev> sorgu = _db.Gorevler
             .AsNoTracking()
-            .Include(g => g.Kategori)                        // JOIN
-                                                             // ⭐ KOŞULLU SIRALAMA — CASE WHEN'in LINQ karşılığı
-            .OrderBy(g => g.Durum == GorevDurum.Tamamlandi)  // tamamlananlar alta
-            .ThenByDescending(g => g.Oncelik)                // yüksek öncelik üste
-            .ThenBy(g => g.BitisTarihi == null)              // tarihsizler alta
-            .ThenBy(g => g.BitisTarihi)                      // yakın tarih üste
+            .Include(g => g.Kategori);
+
+        if (!string.IsNullOrWhiteSpace(arama))
+        {
+            string temizArama = arama.Trim();
+
+            // Başlık veya açıklamada ara
+            // ⚠️ Aciklama NULL olabilir — EF bunu SQL'de doğru ele alır,
+            //    NULL satırlar LIKE karşılaştırmasında elenir.
+            sorgu = sorgu.Where(g =>
+                g.Baslik.Contains(temizArama) ||
+                (g.Aciklama != null && g.Aciklama.Contains(temizArama)));
+        }
+
+        if (kategoriId.HasValue && kategoriId.Value > 0)
+            sorgu = sorgu.Where(g => g.KategoriId == kategoriId.Value);
+
+        if (durum.HasValue)
+            sorgu = sorgu.Where(g => g.Durum == durum.Value);
+
+        if (oncelik.HasValue)
+            sorgu = sorgu.Where(g => g.Oncelik == oncelik.Value);
+
+        if (sadeceGecikmis)
+        {
+            // ⭐⭐ BURASI KRİTİK
+            //
+            // ❌ sorgu.Where(g => g.GecikmisMi)
+            //    → "The LINQ expression could not be translated"
+            //
+            // ✅ GecikmisMi özelliğinin SQL'e çevrilebilir hâli:
+            sorgu = sorgu.Where(g => g.BitisTarihi != null
+                                  && g.BitisTarihi < bugun
+                                  && g.Durum != GorevDurum.Tamamlandi);
+        }
+
+        // Sıralama (Modül 4'ten aynen)
+        var liste = await sorgu
+            .OrderBy(g => g.Durum == GorevDurum.Tamamlandi)
+            .ThenByDescending(g => g.Oncelik)
+            .ThenBy(g => g.BitisTarihi == null)
+            .ThenBy(g => g.BitisTarihi)
             .ToListAsync();
 
-        return View(gorevler);
+        // ⭐ Filtre değerlerini geri gönder — form dolu kalsın
+        ViewBag.Arama = arama;
+        ViewBag.SeciliKategori = kategoriId;
+        ViewBag.SeciliDurum = durum;
+        ViewBag.SeciliOncelik = oncelik;
+        ViewBag.SadeceGecikmis = sadeceGecikmis;
+
+        await KategoriListesiniHazirlaAsync(kategoriId);
+
+        return View(liste);
     }
 
     // ══════════════════════════════════════════════════════
@@ -93,6 +152,9 @@ public class GorevController : Controller
         gorev.TamamlanmaTarihi = (gorev.Durum == GorevDurum.Tamamlandi)
             ? DateTime.Now
             : null;
+
+        // ⭐ SAHİBİ ATA
+        gorev.KullaniciId = _db.AktifKullaniciId;
 
         // ⚠️ gorev.Kategori navigasyon özelliği NULL — bu SORUN DEĞİL.
         //    EF, KategoriId alanına bakar. Kategori nesnesini de
@@ -222,13 +284,17 @@ public class GorevController : Controller
     // ══════════════════════════════════════════════════════
     //  8) PASİF KAYITLAR
     // ══════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════
+    //  8) PASİF KAYITLAR
+    // ══════════════════════════════════════════════════════
     public async Task<IActionResult> Pasifler()
     {
         var pasifler = await _db.Gorevler
             .AsNoTracking()
             .IgnoreQueryFilters()
-            .Include(g => g.Kategori)                // ⭐ soft delete filtresini atla
-            .Where(g => !g.AktifMi)
+            .Include(g => g.Kategori)            // ⭐ soft delete filtresini atla
+            .Where(g => !g.AktifMi
+                     && g.KullaniciId == _db.AktifKullaniciId) // ⭐ KULLANICIYI ELLE EKLE
             .OrderBy(g => g.Baslik)
             .ToListAsync();
 

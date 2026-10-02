@@ -67,10 +67,31 @@ public class HesapController : Controller
             return View(model);
         }
 
+        await OturumAcAsync(kullanici, model.BeniHatirla);
+
+        // ⚠️ Url.IsLocalUrl kontrolü ŞART!
+        //    Olmasaydı saldırgan şöyle bir bağlantı hazırlayabilirdi:
+        //      /Hesap/Giris?donusUrl=https://sahte-site.com
+        //    Kullanıcı giriş sonrası sahte siteye giderdi (open redirect).
+        if (!string.IsNullOrEmpty(donusUrl) && Url.IsLocalUrl(donusUrl))
+            return Redirect(donusUrl);
+
+        return RedirectToAction("Index", "Home");
+    }
+
+
+
+    // ══════════════════════════════════════════════════════
+    //  YARDIMCI: çerezi oluştur (giriş + kayıt ortak kullanır)
+    // ══════════════════════════════════════════════════════
+    private async Task OturumAcAsync(Kullanici kullanici, bool beniHatirla)
+    {
         // Claim = kullanıcı hakkında bir bilgi parçası.
         // Çereze şifrelenerek yazılır, her istekte sunucuya gelir.
         var iddialar = new List<Claim>
         {
+            // ⭐ Bu claim çok önemli: DbContext query filter için
+            //    tam olarak bunu okuyor.
             new Claim(ClaimTypes.NameIdentifier, kullanici.KullaniciId.ToString()),
             new Claim(ClaimTypes.Name, kullanici.AdSoyad),
             new Claim("KullaniciAdi", kullanici.KullaniciAdi)
@@ -81,7 +102,7 @@ public class HesapController : Controller
 
         var ozellikler = new AuthenticationProperties
         {
-            IsPersistent = model.BeniHatirla,   // tarayıcı kapansa da yaşasın mı?
+            IsPersistent = beniHatirla,
             AllowRefresh = true
         };
 
@@ -89,15 +110,6 @@ public class HesapController : Controller
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(kimlik),
             ozellikler);
-
-        // ⚠️ Url.IsLocalUrl kontrolü ŞART!
-        //    Olmasaydı saldırgan şöyle bir bağlantı hazırlayabilirdi:
-        //      /Hesap/Giris?donusUrl=https://sahte-site.com
-        //    Kullanıcı giriş sonrası sahte siteye giderdi (open redirect).
-        if (!string.IsNullOrEmpty(donusUrl) && Url.IsLocalUrl(donusUrl))
-            return Redirect(donusUrl);
-
-        return RedirectToAction("Index", "Home");
     }
 
     // POST: /Hesap/Cikis
@@ -114,4 +126,117 @@ public class HesapController : Controller
         TempData["Bilgi"] = "Oturumunuz kapatıldı.";
         return RedirectToAction(nameof(Giris));
     }
+
+    // ══════════════════════════════════════════════════════
+    //  KAYIT FORMU
+    //  GET: /Hesap/Kayit
+    // ══════════════════════════════════════════════════════
+    [HttpGet]
+    public IActionResult Kayit()
+    {
+        // Zaten giriş yapmışsa kayıt formunu gösterme
+        if (User.Identity != null && User.Identity.IsAuthenticated)
+            return RedirectToAction("Index", "Home");
+
+        return View();
+    }
+
+
+    // ══════════════════════════════════════════════════════
+    //  KAYDI İŞLE
+    //  POST: /Hesap/Kayit
+    // ══════════════════════════════════════════════════════
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Kayit(KayitViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        // ── 1) Kullanıcı adı boşta mı? ──────────────────────
+        //
+        // ⚠️ IgnoreQueryFilters ŞART!
+        //    Kullanici tablosunda AktifMi filtresi var.
+        //    Pasif bir kullanıcı aynı adı kullanıyorsa onu da
+        //    görmemiz gerekir — yoksa benzersiz indeks hata verir
+        //    ve kullanıcı sebebini anlayamaz.
+        bool adAlinmis = await _db.Kullanicilar
+            .IgnoreQueryFilters()
+            .AnyAsync(k => k.KullaniciAdi == model.KullaniciAdi);
+
+        if (adAlinmis)
+        {
+            ModelState.AddModelError(nameof(KayitViewModel.KullaniciAdi),
+                "Bu kullanıcı adı zaten alınmış. Başka bir tane deneyin.");
+            return View(model);
+        }
+
+        // ── 2) Kullanıcıyı oluştur ──────────────────────────
+        var kullanici = new Kullanici
+        {
+            KullaniciAdi = model.KullaniciAdi.Trim(),
+            AdSoyad = model.AdSoyad.Trim(),
+            SifreHash = SifreYardimcisi.Hashle(model.Sifre),  // ⭐ düz metin DEĞİL
+            CreatedDate = DateTime.Now,
+            AktifMi = true
+        };
+
+        try
+        {
+            _db.Kullanicilar.Add(kullanici);
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            // ⭐ YARIŞ KOŞULU AĞI
+            //    Yukarıdaki kontrolden sonra, bu satıra gelene kadar
+            //    başka biri aynı adı almış olabilir. Benzersiz indeks
+            //    bunu engeller ve buraya düşeriz.
+            ModelState.AddModelError(nameof(KayitViewModel.KullaniciAdi),
+                "Bu kullanıcı adı az önce alındı. Başka bir tane deneyin.");
+            return View(model);
+        }
+
+        // ⭐ SaveChanges sonrası kullanici.KullaniciId DOLMUŞ olur.
+        //    EF, veritabanının ürettiği IDENTITY değerini geri yazar.
+
+        // ── 3) Başlangıç kategorileri ver ───────────────────
+        //    Yeni kullanıcı bomboş bir ekranla karşılaşmasın.
+        await BaslangicKategorileriEkleAsync(kullanici.KullaniciId);
+
+        // ── 4) Otomatik giriş yaptır ────────────────────────
+        //    Kullanıcıyı bir de giriş formuna göndermek gereksiz.
+        await OturumAcAsync(kullanici, beniHatirla: false);
+
+        TempData["Basarili"] = $"Hoş geldiniz {kullanici.AdSoyad}! Hesabınız oluşturuldu.";
+        return RedirectToAction("Index", "Home");
+    }
+
+
+    // ══════════════════════════════════════════════════════
+    //  YARDIMCI: yeni kullanıcıya hazır kategoriler
+    // ══════════════════════════════════════════════════════
+    private async Task BaslangicKategorileriEkleAsync(long kullaniciId)
+    {
+        var kategoriler = new List<Kategori>
+        {
+            new Kategori { KullaniciId = kullaniciId, KategoriAd = "İş",
+                           Renk = "primary", Aciklama = "İşle ilgili görevler",
+                           CreatedDate = DateTime.Now, AktifMi = true },
+
+            new Kategori { KullaniciId = kullaniciId, KategoriAd = "Kişisel",
+                           Renk = "info", Aciklama = null,
+                           CreatedDate = DateTime.Now, AktifMi = true },
+
+            new Kategori { KullaniciId = kullaniciId, KategoriAd = "Ev",
+                           Renk = "warning", Aciklama = null,
+                           CreatedDate = DateTime.Now, AktifMi = true }
+        };
+
+        _db.Kategoriler.AddRange(kategoriler);
+        await _db.SaveChangesAsync();
+    }
+
+
+
 }

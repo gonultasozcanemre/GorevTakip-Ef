@@ -1,13 +1,47 @@
 using Microsoft.EntityFrameworkCore;
 using GorevTakip.Models;
+using System.Security.Claims;
 
 namespace GorevTakip.Data;
 
 public class GorevDbContext : DbContext
 {
-    public GorevDbContext(DbContextOptions<GorevDbContext> options)
+    // ══════════════════════════════════════════════════════
+    //  AKTİF KULLANICI
+    //
+    //  ⭐ readonly: yapıcıda bir kez atanır, sonra değişmez.
+    //     Her HTTP isteği için YENİ bir DbContext üretildiğini
+    //     hatırlayın (Modül 0 — Scoped ömür). Yani her istekte
+    //     bu alan o isteğin kullanıcısıyla dolar.
+    // ══════════════════════════════════════════════════════
+    private readonly long _aktifKullaniciId;
+
+    /// <summary>
+    /// Controller'lar yeni kayıt oluştururken bunu kullanır.
+    /// Giriş yapılmamışsa 0 döner.
+    /// </summary>
+    public long AktifKullaniciId => _aktifKullaniciId;
+
+    public GorevDbContext(DbContextOptions<GorevDbContext> options,
+                          IHttpContextAccessor httpContextAccessor)
         : base(options)
     {
+        // Giriş yapan kullanıcının id'si çerezde claim olarak duruyor.
+        // Modül 2'de şu satırı yazmıştık:
+        //     new Claim(ClaimTypes.NameIdentifier, kullanici.KullaniciId.ToString())
+        // Şimdi onu geri okuyoruz.
+        //
+        // ⚠️ ?. operatörleri şart:
+        //    - HttpContext null olabilir (arka plan işleri, seeder)
+        //    - User null olabilir
+        //    - Claim bulunamayabilir (giriş yapılmamış)
+        var claim = httpContextAccessor.HttpContext?.User
+                        ?.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (claim != null && long.TryParse(claim.Value, out long id))
+            _aktifKullaniciId = id;
+        else
+            _aktifKullaniciId = 0;   // giriş yok → hiçbir kaydın sahibi 0 değil → boş liste
     }
 
     public DbSet<Kategori> Kategoriler { get; set; }
@@ -36,8 +70,10 @@ public class GorevDbContext : DbContext
         // ══════════════════════════════════════════════════════
         //  2) BENZERSİZLİK
         // ══════════════════════════════════════════════════════
+        // ✅ Aynı kullanıcı aynı adı iki kez kullanamaz,
+        //    farklı kullanıcılar aynı adı kullanabilir
         modelBuilder.Entity<Kategori>()
-            .HasIndex(k => k.KategoriAd)
+            .HasIndex(k => new { k.KullaniciId, k.KategoriAd })
             .IsUnique();
 
         modelBuilder.Entity<Kullanici>()
@@ -68,6 +104,20 @@ public class GorevDbContext : DbContext
             .HasForeignKey(g => g.KategoriId)
             .OnDelete(DeleteBehavior.Restrict);
 
+
+        // ── Sahiplik ilişkileri ──────────────────────────
+        modelBuilder.Entity<Kategori>()
+            .HasOne(k => k.Kullanici)
+            .WithMany(u => u.Kategoriler)
+            .HasForeignKey(k => k.KullaniciId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Gorev>()
+            .HasOne(g => g.Kullanici)
+            .WithMany(u => u.Gorevler)
+            .HasForeignKey(g => g.KullaniciId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // ══════════════════════════════════════════════════════
         //  5) GLOBAL QUERY FILTER — soft delete
         //
@@ -76,9 +126,15 @@ public class GorevDbContext : DbContext
         //
         //  ADO.NET'te bunu her sorguya elle yazıyorduk.
         // ══════════════════════════════════════════════════════
-        modelBuilder.Entity<Kategori>().HasQueryFilter(k => k.AktifMi);
-        modelBuilder.Entity<Gorev>().HasQueryFilter(g => g.AktifMi);
+        // ⭐⭐ Artık iki koşul: silinmemiş VE bu kullanıcıya ait
+        modelBuilder.Entity<Kategori>()
+            .HasQueryFilter(k => k.AktifMi && k.KullaniciId == _aktifKullaniciId);
+        modelBuilder.Entity<Gorev>()
+           .HasQueryFilter(g => g.AktifMi && g.KullaniciId == _aktifKullaniciId);
         modelBuilder.Entity<Kullanici>().HasQueryFilter(k => k.AktifMi);
+
+
+
         // ══════════════════════════════════════════════════════
         //  SABİT BAŞLANGIÇ VERİSİ
         //
@@ -91,6 +147,7 @@ public class GorevDbContext : DbContext
             new Kategori
             {
                 KategoriId = 1,
+                KullaniciId = 1,
                 KategoriAd = "İş",
                 Renk = "primary",
                 Aciklama = "İşle ilgili görevler ve toplantılar",
@@ -100,6 +157,7 @@ public class GorevDbContext : DbContext
             new Kategori
             {
                 KategoriId = 2,
+                KullaniciId = 1,
                 KategoriAd = "Okul",
                 Renk = "success",
                 Aciklama = "Ders, ödev ve sınav hazırlıkları",
@@ -109,6 +167,7 @@ public class GorevDbContext : DbContext
             new Kategori
             {
                 KategoriId = 3,
+                KullaniciId = 1,
                 KategoriAd = "Ev",
                 Renk = "warning",
                 Aciklama = null,               // ⭐ NULL olabilen alan
@@ -118,6 +177,7 @@ public class GorevDbContext : DbContext
             new Kategori
             {
                 KategoriId = 4,
+                KullaniciId = 1,
                 KategoriAd = "Kişisel",
                 Renk = "info",
                 Aciklama = "Kişisel gelişim ve sağlık",
@@ -126,10 +186,10 @@ public class GorevDbContext : DbContext
             }
         );
 
-        // Admin hesabı — şifre: gorev123
-        // SifreYardimcisi sınıfını Modül 2'de yazacağız.
-        // Şimdilik bu bloğu YORUM olarak bırakın, Modül 2'de açacağız.
-        
+        //Admin hesabı — şifre: gorev123
+        //SifreYardimcisi sınıfını Modül 2'de yazacağız.
+        //Şimdilik bu bloğu YORUM olarak bırakın, Modül 2'de açacağız.
+
         modelBuilder.Entity<Kullanici>().HasData(
             new Kullanici
             {
@@ -140,7 +200,6 @@ public class GorevDbContext : DbContext
                 CreatedDate = sabitTarih,
                 AktifMi = true
             }
-            
         );
     }
 }

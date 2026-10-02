@@ -16,9 +16,11 @@ public static class VeriTohumlayici
 {
     public static async Task GorevleriEkleAsync(GorevDbContext db)
     {
-        // ⭐ EN ÖNEMLİ SATIR: zaten veri varsa hiçbir şey yapma.
-        //    Olmasaydı uygulama her açıldığında kopya kayıt eklenirdi.
-        if (await db.Gorevler.AnyAsync())
+        // ⭐ IgnoreQueryFilters ŞART!
+        //    Seeder'ın aktif kullanıcısı yok (_aktifKullaniciId = 0).
+        //    Filtre açık kalsaydı hiçbir kaydı göremez ve
+        //    HER AÇILIŞTA 20 görev daha eklerdi.
+        if (await db.Gorevler.IgnoreQueryFilters().AnyAsync())
             return;
 
         var bugun = DateTime.Today;
@@ -31,6 +33,7 @@ public static class VeriTohumlayici
             // ⚠️ GECİKMİŞ: tarih geçmiş, tamamlanmamış
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 1,
                 Baslik = "Aylık satış raporunu hazırla",
                 Aciklama = "Geçen ayın rakamlarını tabloya dök, grafiklerle destekle.",
@@ -43,6 +46,7 @@ public static class VeriTohumlayici
             // ⚠️ GECİKMİŞ
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 1,
                 Baslik = "Müşteri sunumunu güncelle",
                 Aciklama = null,                       // ⭐ açıklaması yok
@@ -55,6 +59,7 @@ public static class VeriTohumlayici
             // 📅 BUGÜN
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 1,
                 Baslik = "Ekip toplantısı notlarını paylaş",
                 Aciklama = "Konuşulan maddeleri özetleyip e-posta at.",
@@ -67,6 +72,7 @@ public static class VeriTohumlayici
             // ✅ TAMAMLANDI
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 1,
                 Baslik = "Bütçe tablosunu kontrol et",
                 Aciklama = "Geçen çeyrek harcamalarını gözden geçir.",
@@ -80,6 +86,7 @@ public static class VeriTohumlayici
             // Yaklaşan
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 1,
                 Baslik = "Yeni proje teklifini yaz",
                 Aciklama = "Kapsam, süre ve maliyet tahmini içermeli.",
@@ -92,6 +99,7 @@ public static class VeriTohumlayici
             // Tarihsiz
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 1,
                 Baslik = "LinkedIn profilini güncelle",
                 Aciklama = null,
@@ -106,6 +114,7 @@ public static class VeriTohumlayici
             // ⚠️ GECİKMİŞ
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 2,
                 Baslik = "Veritabanı ödevini teslim et",
                 Aciklama = "ER diyagramı ve normalizasyon adımları dâhil.",
@@ -118,6 +127,7 @@ public static class VeriTohumlayici
             // 📅 BUGÜN
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 2,
                 Baslik = "Web programlama laboratuvarına hazırlan",
                 Aciklama = "EF Core modüllerini tekrar et.",
@@ -129,6 +139,7 @@ public static class VeriTohumlayici
 
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 2,
                 Baslik = "Vize sınavına çalış",
                 Aciklama = "İlk 6 hafta konuları.",
@@ -140,6 +151,7 @@ public static class VeriTohumlayici
 
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 2,
                 Baslik = "Grup projesi için toplantı ayarla",
                 Aciklama = null,
@@ -152,6 +164,7 @@ public static class VeriTohumlayici
             // ✅ TAMAMLANDI
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 2,
                 Baslik = "Ders kayıtlarını yenile",
                 Aciklama = "Seçmeli dersleri de eklemeyi unutma.",
@@ -165,6 +178,7 @@ public static class VeriTohumlayici
             // ✅ TAMAMLANDI
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 2,
                 Baslik = "Kütüphaneden kitapları iade et",
                 Aciklama = null,
@@ -180,6 +194,7 @@ public static class VeriTohumlayici
             // ⚠️ GECİKMİŞ
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 3,
                 Baslik = "Elektrik faturasını öde",
                 Aciklama = "Son ödeme tarihi geçti, gecikme faizi olabilir.",
@@ -191,6 +206,7 @@ public static class VeriTohumlayici
 
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 3,
                 Baslik = "Market alışverişi yap",
                 Aciklama = "Süt, ekmek, yumurta, deterjan.",
@@ -203,6 +219,7 @@ public static class VeriTohumlayici
             // ✅ TAMAMLANDI
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 3,
                 Baslik = "Çamaşır makinesinin servisini ara",
                 Aciklama = null,
@@ -216,6 +233,7 @@ public static class VeriTohumlayici
             // Tarihsiz
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 3,
                 Baslik = "Kitaplığı düzenle",
                 Aciklama = null,
@@ -229,6 +247,7 @@ public static class VeriTohumlayici
 
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 4,
                 Baslik = "Diş hekimi randevusu al",
                 Aciklama = "6 aylık kontrol zamanı geldi.",
@@ -241,6 +260,7 @@ public static class VeriTohumlayici
             // ✅ TAMAMLANDI
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 4,
                 Baslik = "Spor salonu üyeliğini yenile",
                 Aciklama = null,
@@ -254,6 +274,7 @@ public static class VeriTohumlayici
             // Tarihsiz
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 4,
                 Baslik = "C# kitabını bitir",
                 Aciklama = "Kalan 4 bölüm.",
@@ -266,6 +287,7 @@ public static class VeriTohumlayici
             // Tarihsiz
             new Gorev
             {
+                KullaniciId = 1,
                 KategoriId = 4,
                 Baslik = "Fotoğraf arşivini yedekle",
                 Aciklama = null,

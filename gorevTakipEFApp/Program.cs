@@ -35,6 +35,9 @@ builder.Services
         secenekler.Cookie.Name = "GorevTakip.Oturum";
     });
 
+// ⭐ DbContext'in "kim giriş yapmış?" sorusunu sorabilmesi için
+builder.Services.AddHttpContextAccessor();
+
 // ── 3. EF Core ──────────────────────────────────────────────
 builder.Services.AddDbContext<GorevDbContext>(secenekler =>
 {

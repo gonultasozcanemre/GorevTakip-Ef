@@ -20,89 +20,93 @@ build_property.TargetFrameworkVersion = v10.0
 build_property.EntryPointFilePath = 
 build_property.RootNamespace = gorevTakipEFApp
 build_property.RootNamespace = gorevTakipEFApp
-build_property.ProjectDir = C:\Users\özcanemregönültaş\Documents\dev\GorevTakip-Ef\GorevTakipEFApp\
+build_property.ProjectDir = C:\Users\özcanemregönültaş\Documents\dev\GorevTakip-Ef\gorevTakipEFApp\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 10.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\özcanemregönültaş\Documents\dev\GorevTakip-Ef\GorevTakipEFApp
+build_property.MSBuildProjectDirectory = C:\Users\özcanemregönültaş\Documents\dev\GorevTakip-Ef\gorevTakipEFApp
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Create.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Gorev/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Delete.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Gorev/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcRGVsZXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Details.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Gorev/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Edit.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Gorev/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Index.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Gorev/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Gorev/Pasifler.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Gorev/Pasifler.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR29yZXZcUGFzaWZsZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Hesap/Giris.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Hesap/Giris.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGVzYXBcR2lyaXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Home/Index.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Hesap/Kayit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGVzYXBcS2F5aXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Home/Privacy.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Kategori/Create.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Kategori/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2F0ZWdvcmlcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Kategori/Delete.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Kategori/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2F0ZWdvcmlcRGVsZXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Kategori/Edit.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Kategori/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2F0ZWdvcmlcRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Kategori/Index.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Kategori/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2F0ZWdvcmlcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Kategori/Pasifler.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Kategori/Pasifler.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2F0ZWdvcmlcUGFzaWZsZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Shared/Error.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/_ViewImports.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/_ViewStart.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/GorevTakipEFApp/Views/Shared/_Layout.cshtml]
+[C:/Users/özcanemregönültaş/Documents/dev/GorevTakip-Ef/gorevTakipEFApp/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-eidg3otywd

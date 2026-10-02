@@ -7,6 +7,12 @@ public class Kategori
     // "<SınıfAdı>Id" → EF bunu birincil anahtar kabul eder
     public long KategoriId { get; set; }
 
+    // ⭐ SAHİPLİK — bu kategori hangi kullanıcıya ait?
+    // ⚠️ FORMDA GÖSTERİLMEZ. Controller otomatik doldurur.
+    public long KullaniciId { get; set; }
+
+
+
     [Required(ErrorMessage = "Kategori adı zorunludur.")]
     [StringLength(100, ErrorMessage = "En fazla 100 karakter olabilir.")]
     [Display(Name = "Kategori adı")]
@@ -39,5 +45,7 @@ public class Kategori
     // ── Navigasyon ───────────────────────────────────────────
     // Bu kategorideki görevler.
     // ⚠️ Veritabanında sütunu YOK — EF ilişkiden anlar.
+    // ⚠️ Sondaki ? şart — formdan bu nesne gelmez
+    public Kullanici? Kullanici { get; set; }
     public List<Gorev> Gorevler { get; set; } = new();
 }

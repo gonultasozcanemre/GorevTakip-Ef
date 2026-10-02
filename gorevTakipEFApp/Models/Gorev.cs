@@ -7,6 +7,9 @@ public class Gorev
 {
     public long GorevId { get; set; }
 
+    // ⭐ SAHİPLİK — bu görev hangi kullanıcıya ait?
+    public long KullaniciId { get; set; }
+
     // Yabancı anahtar. "Kategori" navigasyonuyla birlikte
     // olduğu için EF ilişkiyi kendiliğinden anlar.
     [Required(ErrorMessage = "Kategori seçmelisiniz.")]
@@ -58,6 +61,8 @@ public class Gorev
     //    (sadece KategoriId gelir). ? olmazsa ModelState geçersiz olur.
     [Display(Name = "Kategori")]
     public Kategori? Kategori { get; set; }
+    public Kullanici? Kullanici { get; set; }
+
 
 
     // ══════════════════════════════════════════════════════════
